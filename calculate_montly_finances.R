@@ -3,16 +3,16 @@
 # flat details:
 
 # --------------
-room1 = 26.04
-room2= 8.56
-room3 = 14.55
-kitchen = 6.12
+room1    = 26.04
+room2    = 8.56
+room3    = 14.55
+kitchen  = 6.12
 entrance = 8.65
 bathroom = 4.13
-storage1= 2.32
-lodgia1 = 6.96
-lodgia2=6.96
-storage2=5.29
+storage1 = 2.32
+lodgia1  = 6.96
+lodgia2  = 6.96
+storage2 = 5.29
 
 
 # Property cost in CZK
