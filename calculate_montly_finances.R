@@ -1,5 +1,42 @@
 
 
+# flat details:
+
+# --------------
+room1 = 26.04
+room2= 8.56
+room3 = 14.55
+kitchen = 6.12
+entrance = 8.65
+bathroom = 4.13
+storage1= 2.32
+lodgia1 = 6.96
+lodgia2=6.96
+storage2=5.29
+
+
+# Property cost in CZK
+property_price_czk <- 8500000
+reconstruction_cost <- 1500000
+total_property_cost <- property_price_czk + reconstruction_cost
+
+# Total area
+# Total area
+total_area <- room1 + room2 + room3 + kitchen + entrance + bathroom +
+  storage1 + lodgia1 + lodgia2 + storage2
+
+# costs  per living area
+
+living_area <- room1 + room2 + room3 + kitchen + entrance + bathroom
+cost_per_m2_living <- property_price_czk / living_area
+(living_area)
+(cost_per_m2_living)
+
+usable_area <- total_area  # includes storage + lodgias
+cost_per_m2_usable <- property_price_czk / usable_area
+(cost_per_m2_usable)
+
+
 # -----------------------------
 # Personal Finance & Mortgage Tracker with Rate Scenarios
 # -----------------------------
@@ -24,10 +61,6 @@ expenses_living <- 9000
 other_expenses <- 10000  # Add extra buffer if needed
 fixed_expenses <- expenses_kita + expenses_food + expenses_living + other_expenses
 
-# Property cost in CZK
-property_price_czk <- 8500000
-reconstruction_cost <- 1500000
-total_property_cost <- property_price_czk + reconstruction_cost
 
 # Mortgage loan needed
 mortgage_principal <- total_property_cost - total_savings
@@ -88,11 +121,95 @@ for (rate_scenario in interest_rates) {
 print("------ Mortgage Rate Scenarios ------")
 print(results)
 
-# Optional: Plot Net Monthly Balance by Scenario
-# Uncomment if ggplot2 is installed
-# library(ggplot2)
-# ggplot(results, aes(x = factor(InterestRate), y = NetMonthlyBalance)) +
-#   geom_col(fill = "steelblue") +
-#   labs(title = "Net Monthly Balance by Mortgage Interest Rate",
-#        x = "Interest Rate (%)",
-#        y = "Net Monthly Balance (CZK)")
+
+
+# ------------------------------
+# How much to save to pay it earlier?
+# ------------------------------
+
+early_years <- c(25, 20, 15, 10, 5)  # Scenarios: finish in 25 or 20 years
+
+early_payoff <- data.frame(
+  YearsToPayOff = numeric(),
+  RequiredMonthlyPayment = numeric(),
+  ExtraMonthlyPayment = numeric(),
+  ExtraYearlySavings = numeric()
+)
+
+for (years in early_years) {
+  n_months <- years * 12
+  monthly_interest <- 0.049 / 12
+  
+  # New monthly payment for shorter term
+  required_payment <- mortgage_principal * 
+    (monthly_interest * (1 + monthly_interest)^n_months) / 
+    ((1 + monthly_interest)^n_months - 1)
+  
+  # Extra amount over current mortgage
+  extra_monthly <- required_payment - monthly_mortgage_payment
+  extra_yearly <- extra_monthly * 12
+  
+  # Save results
+  early_payoff <- rbind(early_payoff, data.frame(
+    YearsToPayOff = years,
+    RequiredMonthlyPayment = round(required_payment),
+    ExtraMonthlyPayment = round(extra_monthly),
+    ExtraYearlySavings = round(extra_yearly)
+  ))
+}
+
+early_payoff
+
+
+
+# ---------------------------------
+# Payment & saving Maya vs Jake
+# ---------------------------------
+
+# Income shares
+share_maja <- net_income_maja / total_income
+share_jake <- net_income_jake / total_income
+
+
+# Monthly mortgage payment
+monthly_mortgage_payment <- mortgage_principal * 
+  (monthly_interest * (1 + monthly_interest)^months) / 
+  ((1 + monthly_interest)^months - 1)
+
+# Split mortgage payment
+maja_mortgage_payment <- monthly_mortgage_payment * share_maja
+jake_mortgage_payment <- monthly_mortgage_payment * share_jake
+
+# Parent loan repayment (for Maja only)
+parent_loan_monthly_payment <- parents_savings / 60  # 5 years
+
+# Shared expenses: assume split 50/50 or adjust similarly
+maja_expenses <- fixed_expenses * 0.5
+jake_expenses <- fixed_expenses * 0.5
+
+# Maja monthly costs
+maja_total_outflow <- maja_mortgage_payment + maja_expenses + parent_loan_monthly_payment
+maja_net_balance <- net_income_maja - maja_total_outflow
+
+# Jake monthly costs
+jake_total_outflow <- jake_mortgage_payment + jake_expenses
+jake_net_balance <- net_income_jake - jake_total_outflow
+
+# -----------------------------
+# Output Summary
+# -----------------------------
+cat("---- Monthly Split Summary ----\n")
+cat("Maja's Share of Mortgage:", round(share_maja * 100), "%\n")
+cat("Jake's Share of Mortgage:", round(share_jake * 100), "%\n\n")
+
+cat("Monthly Mortgage Payment (Total):", round(monthly_mortgage_payment), "\n")
+cat(" - Maja pays:", round(maja_mortgage_payment), "\n")
+cat(" - Jake pays:", round(jake_mortgage_payment), "\n\n")
+
+cat("Maja's Monthly Loan Repayment to Parents:", round(parent_loan_monthly_payment), "\n")
+
+cat("\nMaja's Total Outflow:", round(maja_total_outflow), "\n")
+cat("Jake's Total Outflow:", round(jake_total_outflow), "\n\n")
+
+cat("Maja's Net Monthly Balance:", round(maja_net_balance), "\n")
+cat("Jake's Net Monthly Balance:", round(jake_net_balance), "\n")
