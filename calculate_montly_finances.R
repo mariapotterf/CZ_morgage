@@ -16,7 +16,7 @@ storage2=5.29
 
 
 # Property cost in CZK
-property_price_czk <- 8500000
+property_price_czk  <- 8500000
 reconstruction_cost <- 1500000
 total_property_cost <- property_price_czk + reconstruction_cost
 
@@ -34,6 +34,7 @@ cost_per_m2_living <- property_price_czk / living_area
 
 usable_area <- total_area  # includes storage + lodgias
 cost_per_m2_usable <- property_price_czk / usable_area
+(usable_area)
 (cost_per_m2_usable)
 
 
