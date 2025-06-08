@@ -16,7 +16,7 @@ storage2 = 5.29
 
 
 # Property cost in CZK
-property_price_czk  <- 8500000
+property_price_czk  <- 8000000
 reconstruction_cost <- 1500000
 total_property_cost <- property_price_czk + reconstruction_cost
 
@@ -52,15 +52,16 @@ total_savings <- our_savings + parents_savings
 
 # Income (in CZK)
 net_income_maja <- 39000
-net_income_jake <- 2900 * rate
+net_income_jake <- 3300 * rate
 total_income <- net_income_maja + net_income_jake
 
 # Monthly expenses (in CZK)
-expenses_kita <- 5000
+expenses_kita <- 6000
 expenses_food <- 15000
 expenses_living <- 9000
 other_expenses <- 10000  # Add extra buffer if needed
-fixed_expenses <- expenses_kita + expenses_food + expenses_living + other_expenses
+expenses_living_jake <- 500 * rate
+fixed_expenses <- expenses_kita + expenses_food + expenses_living + other_expenses + expenses_living_jake
 
 
 # Mortgage loan needed
@@ -69,7 +70,7 @@ mortgage_term_years <- 30
 months <- mortgage_term_years * 12
 
 # Interest rate scenarios
-interest_rates <- c(0.046, 0.049, 0.052)
+interest_rates <- c(0.0469, 0.0499, 0.0529)
 
 # Storage for results
 results <- data.frame(
