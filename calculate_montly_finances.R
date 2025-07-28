@@ -52,16 +52,16 @@ total_savings <- our_savings + parents_savings
 
 # Income (in CZK)
 net_income_maja <- 39000
-net_income_jake <- 3300 * rate
+net_income_jake <- 50000 #3300 * rate
 total_income <- net_income_maja + net_income_jake
 
 # Monthly expenses (in CZK)
-expenses_kita <- 6000
+expenses_kita <- 5000
 expenses_food <- 15000
-expenses_living <- 9000
+expenses_living <- 10000
 other_expenses <- 10000  # Add extra buffer if needed
-expenses_living_jake <- 500 * rate
-fixed_expenses <- expenses_kita + expenses_food + expenses_living + other_expenses + expenses_living_jake
+#expenses_living_jake <- 500 * rate
+fixed_expenses <- expenses_kita + expenses_food + expenses_living + other_expenses# + expenses_living_jake
 
 
 # Mortgage loan needed
@@ -70,7 +70,7 @@ mortgage_term_years <- 30
 months <- mortgage_term_years * 12
 
 # Interest rate scenarios
-interest_rates <- c(0.0469, 0.0499, 0.0529)
+interest_rates <- c(0.0439)
 
 # Storage for results
 results <- data.frame(
@@ -124,6 +124,64 @@ print("------ Mortgage Rate Scenarios ------")
 print(results)
 
 
+
+# ----------------------------------
+# Create amortization table: principal vs interest
+# ----------------------------------
+
+# Function to create amortization table
+create_amortization_table <- function(principal, annual_rate, term_years, start_date = as.Date("2025-08-20")) {
+  months <- term_years * 12
+  monthly_rate <- annual_rate / 12
+  
+  # Annuity payment
+  monthly_payment <- principal * (monthly_rate * (1 + monthly_rate)^months) / 
+    ((1 + monthly_rate)^months - 1)
+  
+  # Preallocate data frame
+  schedule <- vector("list", months)
+  balance <- principal
+  dates <- seq(start_date, by = "month", length.out = months)
+  
+  for (i in 1:months) {
+    interest <- balance * monthly_rate
+    principal_paid <- monthly_payment - interest
+    balance <- balance - principal_paid
+    
+    schedule[[i]] <- data.frame(
+      Payment_No = i,
+      Date = dates[i],
+      Payment = round(monthly_payment),
+      Principal = round(principal_paid),
+      Interest = round(interest),
+      Remaining_Balance = round(balance)
+    )
+  }
+  
+  dplyr::bind_rows(schedule)
+}
+
+# Generate amortization table using current mortgage principal
+table_with_savings <- create_amortization_table(
+  principal = mortgage_principal,
+  annual_rate = interest_rates[1],
+  term_years = 30
+)
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+table_with_savings %>%
+  select(Date, Principal, Interest) %>%
+  pivot_longer(cols = c(Principal, Interest), names_to = "Type", values_to = "Amount") %>%
+  ggplot(aes(x = Date, y = Amount, color = Type)) +
+  geom_line(size = 1) +
+  labs(title = "Monthly Payment Breakdown: Principal vs Interest",
+       x = "Date",
+       y = "CZK",
+       color = "") +
+  theme_classic()
 
 # ------------------------------
 # How much to save to pay it earlier?
