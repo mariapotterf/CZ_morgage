@@ -59,7 +59,7 @@ total_income <- net_income_maja + net_income_jake
 expenses_kita <- 5000
 expenses_food <- 15000
 expenses_living <- 10000
-other_expenses <- 10000  # Add extra buffer if needed
+other_expenses <- 10000  # Add extra buffer 
 #expenses_living_jake <- 500 * rate
 fixed_expenses <- expenses_kita + expenses_food + expenses_living + other_expenses# + expenses_living_jake
 
@@ -182,43 +182,6 @@ table_with_savings %>%
        y = "CZK",
        color = "") +
   theme_classic()
-
-# ------------------------------
-# How much to save to pay it earlier?
-# ------------------------------
-
-early_years <- c(25, 20, 15, 10, 5)  # Scenarios: finish in 25 or 20 years
-
-early_payoff <- data.frame(
-  YearsToPayOff = numeric(),
-  RequiredMonthlyPayment = numeric(),
-  ExtraMonthlyPayment = numeric(),
-  ExtraYearlySavings = numeric()
-)
-
-for (years in early_years) {
-  n_months <- years * 12
-  monthly_interest <- 0.049 / 12
-  
-  # New monthly payment for shorter term
-  required_payment <- mortgage_principal * 
-    (monthly_interest * (1 + monthly_interest)^n_months) / 
-    ((1 + monthly_interest)^n_months - 1)
-  
-  # Extra amount over current mortgage
-  extra_monthly <- required_payment - monthly_mortgage_payment
-  extra_yearly <- extra_monthly * 12
-  
-  # Save results
-  early_payoff <- rbind(early_payoff, data.frame(
-    YearsToPayOff = years,
-    RequiredMonthlyPayment = round(required_payment),
-    ExtraMonthlyPayment = round(extra_monthly),
-    ExtraYearlySavings = round(extra_yearly)
-  ))
-}
-
-early_payoff
 
 
 
